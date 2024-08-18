@@ -9,6 +9,9 @@
         <module name="dermatel" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="dermatel" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
