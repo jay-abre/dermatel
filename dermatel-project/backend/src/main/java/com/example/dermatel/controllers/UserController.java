@@ -20,6 +20,11 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @PostMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestBody User user) {
+        boolean isAvailable = !userRepository.existsByUsername(user.getUsername());
+        return ResponseEntity.ok().body(new UsernameAvailability(isAvailable));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
@@ -36,5 +41,22 @@ public class UserController {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    }
+
+    // DTO for username availability
+    public static class UsernameAvailability {
+        private boolean available;
+
+        public UsernameAvailability(boolean available) {
+            this.available = available;
+        }
+
+        public boolean isAvailable() {
+            return available;
+        }
+
+        public void setAvailable(boolean available) {
+            this.available = available;
+        }
     }
 }
