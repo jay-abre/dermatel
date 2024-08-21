@@ -15,9 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -39,15 +43,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (token != null && validateToken(token)) {
             String username = getUsernameFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            // Extract roles from claims
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
+                    .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            String role = claims.get("role", String.class);
+            List<String> roles = claims.get("roles", List.class); // Extract roles as list
+            Collection<? extends GrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, Collections.singletonList(() -> role)); // Add role to authorities
+                    userDetails, null, authorities); // Set authorities
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
@@ -65,7 +71,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(secretKey.getBytes())
+                    .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -80,7 +86,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private String getUsernameFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey.getBytes())
+                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

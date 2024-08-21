@@ -4,6 +4,8 @@ import com.example.dermatel.constants.RoleConstants;
 import com.example.dermatel.entities.User;
 import com.example.dermatel.repositories.UserRepository;
 import com.example.dermatel.services.UserService;
+import com.example.dermatel.utils.RoleValidator;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +29,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
-        // Validate role
-        if (!RoleConstants.VALID_ROLES.contains(user.getRole())) {
+    public ResponseEntity<String> registerUser(@RequestBody @Valid User user) {
+        if (!RoleValidator.isValidRole(user.getRole())) {
             return new ResponseEntity<>("Invalid role", HttpStatus.BAD_REQUEST);
         }
 
-        // Check if admin already exists
         if (RoleConstants.ROLE_ADMIN.equals(user.getRole()) && userService.isAdminAlreadyExists()) {
             return new ResponseEntity<>("Admin already exists", HttpStatus.BAD_REQUEST);
         }

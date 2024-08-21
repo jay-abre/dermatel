@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin role required
                         .requestMatchers("/api/dermatologist/**").hasRole("DERMATOLOGIST") // Dermatologist role required
                         .requestMatchers("/api/patient/**").hasRole("PATIENT") // Patient role required
+                        .requestMatchers("/dashboard/**").authenticated() // Ensure /dashboard is protected
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
