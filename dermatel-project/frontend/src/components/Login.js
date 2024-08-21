@@ -1,13 +1,16 @@
+// src/components/Login.js
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,14 +26,17 @@ const Login = () => {
         }
 
         try {
-            await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
                 username,
                 password
             });
             setSuccess('Login successful!');
-            // Redirect to dashboard or another page
+            // Save the auth token
+            localStorage.setItem('authToken', response.data.token);
+            // Redirect to dashboard
+            navigate('/dashboard');
         } catch (error) {
-            setError('Login failed: ' + error.response?.data || error.message);
+            setError('Login failed: ' + (error.response?.data || error.message));
         }
     };
 

@@ -1,9 +1,11 @@
+// src/components/Dashboard.js
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     AppBar, Toolbar, Typography, IconButton,
     Drawer, List, ListItem, ListItemIcon, ListItemText,
-    Container, Grid, Paper, Tabs, Tab, Box, Avatar,
+    Container, Grid, Paper, Tabs, Tab, Box, Avatar, Menu, MenuItem,
     ThemeProvider, createTheme, CssBaseline
 } from '@mui/material';
 import {
@@ -14,11 +16,11 @@ import {
     Description as DescriptionIcon,
     AttachMoney as AttachMoneyIcon,
     People as PeopleIcon,
-    Camera as SkinCareIcon, // Add this for Eczema feature
-    ExitToApp as LogoutIcon
+    Camera as SkinCareIcon,
+    ExitToApp as LogoutIcon,
+    AccountCircle as ProfileIcon
 } from '@mui/icons-material';
 
-// Create a custom theme
 const theme = createTheme({
     palette: {
         primary: {
@@ -33,6 +35,8 @@ const theme = createTheme({
 export default function Dashboard() {
     const [value, setValue] = useState(0);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const navigate = useNavigate();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -45,6 +49,23 @@ export default function Dashboard() {
         setDrawerOpen(open);
     };
 
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('authToken');
+        navigate('/login');
+    };
+
+    const handleProfile = () => {
+        navigate('/profile');
+    };
+
     const menuItems = [
         { text: 'Appointments', icon: <EventIcon />, path: '/appointments' },
         { text: 'Video Calls', icon: <VideoCallIcon />, path: '/video-calls' },
@@ -52,7 +73,7 @@ export default function Dashboard() {
         { text: 'EHR', icon: <DescriptionIcon />, path: '/ehr' },
         { text: 'Billing', icon: <AttachMoneyIcon />, path: '/billing' },
         { text: 'Patients', icon: <PeopleIcon />, path: '/patients' },
-        { text: 'Eczema', icon: <SkinCareIcon />, path: '/eczema' } // Add this for Eczema feature
+        { text: 'Eczema', icon: <SkinCareIcon />, path: '/eczema' }
     ];
 
     const drawer = (
@@ -60,7 +81,12 @@ export default function Dashboard() {
             <Toolbar />
             <List>
                 {menuItems.map((item, index) => (
-                    <ListItem button key={item.text} component={Link} to={item.path}>
+                    <ListItem
+                        button
+                        key={item.text}
+                        component={item.path ? Link : 'div'}
+                        to={item.path}
+                    >
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
                     </ListItem>
@@ -87,7 +113,21 @@ export default function Dashboard() {
                         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
                             Telemedicine Dashboard
                         </Typography>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>JD</Avatar>
+                        <IconButton color="inherit" onClick={handleMenuOpen}>
+                            <Avatar sx={{ bgcolor: 'secondary.main' }}>JD</Avatar>
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                        >
+                            <MenuItem onClick={handleProfile}>
+                                <ProfileIcon sx={{ mr: 1 }} /> Profile
+                            </MenuItem>
+                            <MenuItem onClick={handleLogout}>
+                                <LogoutIcon sx={{ mr: 1 }} /> Logout
+                            </MenuItem>
+                        </Menu>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -95,7 +135,7 @@ export default function Dashboard() {
                     open={drawerOpen}
                     onClose={toggleDrawer(false)}
                     ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
+                        keepMounted: true,
                     }}
                     sx={{
                         display: { xs: 'block', sm: 'none' },
@@ -130,7 +170,6 @@ export default function Dashboard() {
                             </Grid>
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    {/* Add content for each tab here */}
                                     <Typography variant="h5">
                                         {value === 0 && "Appointments Content"}
                                         {value === 1 && "Video Calls Content"}
@@ -138,7 +177,7 @@ export default function Dashboard() {
                                         {value === 3 && "EHR Content"}
                                         {value === 4 && "Billing Content"}
                                         {value === 5 && "Patients Content"}
-                                        {value === 6 && "Eczema Feature Content"} {/* Display Eczema content */}
+                                        {value === 6 && "Eczema Feature Content"}
                                     </Typography>
                                 </Paper>
                             </Grid>
@@ -149,5 +188,3 @@ export default function Dashboard() {
         </ThemeProvider>
     );
 }
-
-
