@@ -20,4 +20,5 @@ file:
 
 jwt:
   secret: d205b4b69c2ebd1950634feeb32eef9a7ee8beea3eac705bad19a3236c5c4c28
-  expiration: 3600
+  expiration-ms: 3600000
+

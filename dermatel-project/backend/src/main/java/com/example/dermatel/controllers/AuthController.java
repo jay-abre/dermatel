@@ -2,6 +2,8 @@ package com.example.dermatel.controllers;
 
 import com.example.dermatel.dto.AuthRequest;
 import com.example.dermatel.dto.AuthResponse;
+import com.example.dermatel.services.CustomUserDetails;
+import com.example.dermatel.services.CustomUserDetailsService;
 import com.example.dermatel.services.TokenBlacklistService;
 import com.example.dermatel.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -13,7 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -42,13 +44,20 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody AuthRequest authRequest) {
         try {
+            // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+            // Ensure the authentication object is of type CustomUserDetails
+            if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+                throw new RuntimeException("Unexpected user details object");
+            }
+
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            Long userId = customUserDetails.getId();
 
             // Generate JWT token
-            String token = jwtUtil.generateToken(userDetails.getUsername(), userDetails.getAuthorities());
+            String token = jwtUtil.generateToken(customUserDetails.getUsername(), userId, customUserDetails.getAuthorities());
 
             logger.info("User '{}' logged in successfully.", authRequest.getUsername());
 
@@ -57,6 +66,12 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             logger.warn("Login attempt failed for user '{}'.", authRequest.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Invalid username or password"));
+        } catch (AuthenticationException e) {
+            logger.error("Authentication error for user '{}'.", authRequest.getUsername(), e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Authentication error"));
+        } catch (Exception e) {
+            logger.error("Unexpected error during login for user '{}'.", authRequest.getUsername(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new AuthResponse("An unexpected error occurred"));
         }
     }
 
@@ -66,6 +81,8 @@ public class AuthController {
         if (token != null && !jwtUtil.isTokenBlacklisted(token)) {
             tokenBlacklistService.blacklistToken(token);
             logger.info("Token '{}' has been blacklisted.", token);
+        } else {
+            logger.warn("Token '{}' is either null or already blacklisted.", token);
         }
         return ResponseEntity.ok().build();
     }

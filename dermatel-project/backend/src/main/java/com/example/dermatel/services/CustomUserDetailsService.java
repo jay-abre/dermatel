@@ -2,17 +2,18 @@ package com.example.dermatel.services;
 
 import com.example.dermatel.entities.User;
 import com.example.dermatel.repositories.UserRepository;
-import com.example.dermatel.constants.RoleConstants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -22,14 +23,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
+        // Use Optional to handle the absence of a user
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         // Convert role to GrantedAuthority
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), List.of(authority));
+        // Return a CustomUserDetails object with the username, password, and authorities
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 }
