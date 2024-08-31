@@ -8,8 +8,7 @@ public final class RoleConstants {
         // private constructor to prevent instantiation
     }
 
-    public static final String ROLE_PATIENT = "ROLE_PATIENT";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_DERMATOLOGIST = "ROLE_DERMATOLOGIST";
-    public static final List<String> VALID_ROLES = Arrays.asList(ROLE_ADMIN, ROLE_PATIENT, ROLE_DERMATOLOGIST);
+    public static final String ROLE_PATIENT = "PATIENT";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_DERMATOLOGIST = "DERMATOLOGIST";
 }

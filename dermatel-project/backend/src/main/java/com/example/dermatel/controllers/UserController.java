@@ -5,6 +5,7 @@ import com.example.dermatel.entities.User;
 import com.example.dermatel.exceptions.InvalidRoleException;
 import com.example.dermatel.repositories.UserRepository;
 import com.example.dermatel.services.UserService;
+import com.example.dermatel.utils.PasswordStrengthValidator;
 import com.example.dermatel.utils.RoleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +39,17 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody @Valid User user) {
         if (!RoleValidator.isValidRole(user.getRole())) {
             logger.warn("Invalid role '{}' for user '{}'.", user.getRole(), user.getUsername());
-            throw new InvalidRoleException("Invalid role" + user.getRole());
+            throw new InvalidRoleException("Invalid role " + user.getRole());
         }
 
         if (RoleConstants.ROLE_ADMIN.equals(user.getRole()) && userService.isAdminAlreadyExists()) {
             logger.warn("Admin user registration attempted but an admin already exists.");
             return new ResponseEntity<>("Admin already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!PasswordStrengthValidator.isValid(user.getPassword())) {
+            logger.warn("Password validation failed for user '{}'.", user.getUsername());
+            return new ResponseEntity<>("Password does not meet strength requirements", HttpStatus.BAD_REQUEST);
         }
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));

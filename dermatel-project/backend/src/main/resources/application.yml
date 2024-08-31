@@ -14,6 +14,10 @@ spring:
       file-size-threshold: 2MB
       max-file-size: 10MB
       max-request-size: 10MB
+file:
+  upload:
+    dir: ./uploads
 
 jwt:
   secret: d205b4b69c2ebd1950634feeb32eef9a7ee8beea3eac705bad19a3236c5c4c28
+  expiration: 3600
