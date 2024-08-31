@@ -2,9 +2,12 @@ package com.example.dermatel.controllers;
 
 import com.example.dermatel.constants.RoleConstants;
 import com.example.dermatel.entities.User;
+import com.example.dermatel.exceptions.InvalidRoleException;
 import com.example.dermatel.repositories.UserRepository;
 import com.example.dermatel.services.UserService;
 import com.example.dermatel.utils.RoleValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -23,23 +28,27 @@ public class UserController {
     private UserRepository userRepository;
 
     @PostMapping("/check-username")
-    public ResponseEntity<?> checkUsername(@RequestBody User user) {
+    public ResponseEntity<UsernameAvailability> checkUsername(@RequestBody User user) {
         boolean isAvailable = !userRepository.existsByUsername(user.getUsername());
+        logger.info("Username '{}' availability checked: {}", user.getUsername(), isAvailable);
         return ResponseEntity.ok().body(new UsernameAvailability(isAvailable));
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody @Valid User user) {
         if (!RoleValidator.isValidRole(user.getRole())) {
-            return new ResponseEntity<>("Invalid role", HttpStatus.BAD_REQUEST);
+            logger.warn("Invalid role '{}' for user '{}'.", user.getRole(), user.getUsername());
+            throw new InvalidRoleException("Invalid role" + user.getRole());
         }
 
         if (RoleConstants.ROLE_ADMIN.equals(user.getRole()) && userService.isAdminAlreadyExists()) {
+            logger.warn("Admin user registration attempted but an admin already exists.");
             return new ResponseEntity<>("Admin already exists", HttpStatus.BAD_REQUEST);
         }
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
+        logger.info("User '{}' registered successfully.", user.getUsername());
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 
