@@ -4,30 +4,42 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import java.util.Date;
 
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "user_profiles")
 public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId; // Reference to the user
 
+    @Column(nullable = false)
     private String fullName;
+
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
     private String phoneNumber;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
+
     @Lob
-    private byte[] document; // Store the document as a byte array
+    @Basic(fetch = FetchType.LAZY)
+    private String document; // Store the document as a Base64 string
 
 
-    // Additional KYC fields as needed
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 }

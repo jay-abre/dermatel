@@ -6,14 +6,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
-public class UserProfileUpdateDto {
+public class UserProfileCreateDto {
     private String fullName;
     private String address;
     private String phoneNumber;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    private MultipartFile document; // Use MultipartFile for file uploads
+    private MultipartFile document;
 }

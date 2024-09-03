@@ -8,9 +8,12 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class UserProfileDto {
+    private Long id;
     private String fullName;
     private String address;
     private String phoneNumber;
     private Date dateOfBirth;
-    private byte[] document; // Store the document as a byte array
+    private String document;
+    private Date createdAt;
+    private Date updatedAt;
 }

@@ -2,6 +2,7 @@ package com.example.dermatel.utils;
 
 import com.example.dermatel.services.TokenBlacklistService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,20 +51,20 @@ public class JwtUtil {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid token or token has expired", e);
+            throw new JwtException("Invalid token or token has expired", e);
         }
     }
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
     public String generateToken(String username, Long userId, Collection<? extends GrantedAuthority> authorities) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         claims.put("user_id", userId);
         return createToken(claims, username);
     }
-
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -77,10 +78,7 @@ public class JwtUtil {
 
     public String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7); // Remove "Bearer " prefix
-        }
-        return null;
+        return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
     }
 
     public boolean isTokenBlacklisted(String token) {

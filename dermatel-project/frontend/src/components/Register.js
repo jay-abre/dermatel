@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('ROLE_PATIENT'); // Default role
+    const [role, setRole] = useState('PATIENT'); // Default role
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
