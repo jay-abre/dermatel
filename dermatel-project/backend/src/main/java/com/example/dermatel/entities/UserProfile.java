@@ -31,9 +31,8 @@ public class UserProfile {
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private String document; // Store the document as a Base64 string
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String document;
 
 
     @Column(nullable = false)

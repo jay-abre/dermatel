@@ -8,12 +8,14 @@ import com.example.dermatel.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/me/profile")
@@ -47,10 +49,13 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
     @PostMapping("/create")
     public ResponseEntity<String> createProfile(
-            @ModelAttribute UserProfileCreateDto createDto,
+            @RequestParam("fullName") String fullName,
+            @RequestParam("address") String address,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("dateOfBirth") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateOfBirth,
+            @RequestParam(value = "document", required = false) MultipartFile document,
             HttpServletRequest request) {
 
         String token = jwtUtil.getTokenFromRequest(request);
@@ -64,6 +69,13 @@ public class UserProfileController {
             log.warn("Unable to extract user ID from token.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
+
+        UserProfileCreateDto createDto = new UserProfileCreateDto();
+        createDto.setFullName(fullName);
+        createDto.setAddress(address);
+        createDto.setPhoneNumber(phoneNumber);
+        createDto.setDateOfBirth(dateOfBirth);
+        createDto.setDocument(document);
 
         try {
             userProfileService.createProfile(userId, createDto);

@@ -17,7 +17,6 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -53,6 +52,8 @@ public class UserProfileService {
             String base64Document = convertToBase64(document);
             userProfile.setDocument(base64Document);
             log.debug("Document converted to Base64 for user ID: {}", userId);
+        } else {
+            log.warn("Document is null or empty for user ID: {}", userId);
         }
 
         userProfile.setCreatedAt(new Date());
@@ -88,7 +89,10 @@ public class UserProfileService {
             String base64Document = convertToBase64(document);
             userProfile.setDocument(base64Document);
             log.debug("Document updated and converted to Base64 for user ID: {}", userId);
+            log.info(base64Document);
         }
+
+
 
         userProfile.setUpdatedAt(new Date());
         userProfileRepository.save(userProfile);
@@ -111,12 +115,14 @@ public class UserProfileService {
     }
 
     private String convertToBase64(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            log.error("File is empty, unable to convert to Base64");
-            throw new IllegalArgumentException("File is empty");
+        if (file == null || file.isEmpty()) {
+            log.error("File is null or empty, unable to convert to Base64");
+            throw new IllegalArgumentException("File is null or empty");
         }
 
+        log.info("Converting file: {} to Base64", file.getOriginalFilename());
         byte[] fileBytes = file.getBytes();
+        log.debug("File size in bytes: {}", fileBytes.length); // Log file size for verification
         String base64String = Base64.getEncoder().encodeToString(fileBytes);
         log.debug("File successfully converted to Base64");
         return base64String;
