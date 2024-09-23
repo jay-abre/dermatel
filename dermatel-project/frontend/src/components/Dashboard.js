@@ -1,7 +1,5 @@
-// src/components/Dashboard.js
-
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
     AppBar, Toolbar, Typography, IconButton,
     Drawer, List, ListItem, ListItemIcon, ListItemText,
@@ -10,16 +8,16 @@ import {
 } from '@mui/material';
 import {
     Menu as MenuIcon,
+    ExitToApp as LogoutIcon,
+    AccountCircle as ProfileIcon,
     Event as EventIcon,
     VideoCall as VideoCallIcon,
     Message as MessageIcon,
     Description as DescriptionIcon,
     AttachMoney as AttachMoneyIcon,
-    People as PeopleIcon,
-    Camera as SkinCareIcon,
-    ExitToApp as LogoutIcon,
-    AccountCircle as ProfileIcon
+    People as PeopleIcon
 } from '@mui/icons-material';
+import KycProfile from './KYCForm';
 
 const theme = createTheme({
     palette: {
@@ -63,17 +61,12 @@ export default function Dashboard() {
     };
 
     const handleProfile = () => {
-        navigate('/profile');
+        navigate('/dashboard/profile');
     };
 
     const menuItems = [
-        { text: 'Appointments', icon: <EventIcon />, path: '/appointments' },
-        { text: 'Video Calls', icon: <VideoCallIcon />, path: '/video-calls' },
-        { text: 'Messaging', icon: <MessageIcon />, path: '/messaging' },
-        { text: 'EHR', icon: <DescriptionIcon />, path: '/ehr' },
-        { text: 'Billing', icon: <AttachMoneyIcon />, path: '/billing' },
-        { text: 'Patients', icon: <PeopleIcon />, path: '/patients' },
-        { text: 'Eczema', icon: <SkinCareIcon />, path: '/eczema' }
+        { text: 'Profile', icon: <ProfileIcon />, action: handleProfile },
+        { text: 'Logout', icon: <LogoutIcon />, action: handleLogout }
     ];
 
     const drawer = (
@@ -81,12 +74,7 @@ export default function Dashboard() {
             <Toolbar />
             <List>
                 {menuItems.map((item, index) => (
-                    <ListItem
-                        button
-                        key={item.text}
-                        component={item.path ? Link : 'div'}
-                        to={item.path}
-                    >
+                    <ListItem button key={item.text} onClick={item.action}>
                         <ListItemIcon>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.text} />
                     </ListItem>
@@ -94,6 +82,15 @@ export default function Dashboard() {
             </List>
         </div>
     );
+
+    const mainTabs = [
+        { text: 'Appointments', icon: <EventIcon />, path: 'appointments' },
+        { text: 'Video Calls', icon: <VideoCallIcon />, path: 'videocalls' },
+        { text: 'Messaging', icon: <MessageIcon />, path: 'messaging' },
+        { text: 'EHR', icon: <DescriptionIcon />, path: 'ehr' },
+        { text: 'Billing', icon: <AttachMoneyIcon />, path: 'billing' },
+        { text: 'Patients', icon: <PeopleIcon />, path: 'patients' }
+    ];
 
     return (
         <ThemeProvider theme={theme}>
@@ -162,23 +159,23 @@ export default function Dashboard() {
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2 }}>
                                     <Tabs value={value} onChange={handleChange} centered>
-                                        {menuItems.map((item) => (
-                                            <Tab key={item.text} label={item.text} icon={item.icon} />
+                                        {mainTabs.map((item, index) => (
+                                            <Tab key={index} label={item.text} icon={item.icon} component={Link} to={item.path} />
                                         ))}
                                     </Tabs>
                                 </Paper>
                             </Grid>
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant="h5">
-                                        {value === 0 && "Appointments Content"}
-                                        {value === 1 && "Video Calls Content"}
-                                        {value === 2 && "Messaging Content"}
-                                        {value === 3 && "EHR Content"}
-                                        {value === 4 && "Billing Content"}
-                                        {value === 5 && "Patients Content"}
-                                        {value === 6 && "Eczema Feature Content"}
-                                    </Typography>
+                                    <Routes>
+                                        <Route path="profile" element={<KycProfile />} />
+                                        <Route path="appointments" element={<div>Appointments Content</div>} />
+                                        <Route path="videocalls" element={<div>Video Calls Content</div>} />
+                                        <Route path="messaging" element={<div>Messaging Content</div>} />
+                                        <Route path="ehr" element={<div>EHR Content</div>} />
+                                        <Route path="billing" element={<div>Billing Content</div>} />
+                                        <Route path="patients" element={<div>Patients Content</div>} />
+                                    </Routes>
                                 </Paper>
                             </Grid>
                         </Grid>
