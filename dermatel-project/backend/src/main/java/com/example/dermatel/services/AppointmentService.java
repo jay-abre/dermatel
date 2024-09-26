@@ -80,4 +80,15 @@ public class AppointmentService {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    public void updateReferenceNumber(Long appointmentId, String referenceNumber, String paymentLink) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
+        appointment.setReferenceNumber(referenceNumber);
+        appointment.setPaymentLink(paymentLink);
+        appointmentRepository.save(appointment);
+    }
+    public void updatePaymentStatus(Long appointmentId, Appointment.PaymentStatus paymentStatus) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
+        appointment.setPaymentStatus(paymentStatus);
+        appointmentRepository.save(appointment);
+    }
 }

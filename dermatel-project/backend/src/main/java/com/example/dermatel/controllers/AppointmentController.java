@@ -71,6 +71,7 @@ public class AppointmentController {
                 updatedAppointment.setAppointmentDate(appointmentDetails.getAppointmentDate());
                 updatedAppointment.setDoctorName(appointmentDetails.getDoctorName());
                 updatedAppointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
+
                 return ResponseEntity.ok(appointmentService.saveAppointment(updatedAppointment));
             } else {
                 logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
@@ -102,4 +103,49 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/{id}/reference-number")
+    public ResponseEntity<Void> updateReferenceNumber(@PathVariable Long id, @RequestParam String referenceNumber,@RequestParam String paymentLink, HttpServletRequest request) {
+        String token = jwtUtil.getTokenFromRequest(request);
+        Long userId = jwtUtil.extractUserId(token);
+        logger.info("Extracted User ID: " + userId);
+        logger.info("Appointment ID to update reference number: " + id);
+        logger.info("New Reference Number: " + referenceNumber);
+        try {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+            if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
+                appointmentService.updateReferenceNumber(id, referenceNumber, paymentLink);
+
+                return ResponseEntity.ok().build();
+            } else {
+                logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.severe("Error updating reference number: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PutMapping("/{id}/payment-status")
+    public ResponseEntity<Void> updatePaymentStatus(@PathVariable Long id, @RequestParam Appointment.PaymentStatus paymentStatus, HttpServletRequest request) {
+        String token = jwtUtil.getTokenFromRequest(request);
+        Long userId = jwtUtil.extractUserId(token);
+        logger.info("Extracted User ID: " + userId);
+        logger.info("Appointment ID to update payment status: " + id);
+        logger.info("New Payment Status: " + paymentStatus);
+        try {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+            if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
+                appointmentService.updatePaymentStatus(id, paymentStatus);
+                return ResponseEntity.ok().build();
+            } else {
+                logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.severe("Error updating payment status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

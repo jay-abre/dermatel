@@ -28,6 +28,10 @@ public class Appointment {
 
     private String doctorName;
 
+    private String referenceNumber;
+
+    private String paymentLink;
+
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
