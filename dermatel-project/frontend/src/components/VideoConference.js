@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
-import { Button, IconButton } from '@mui/material';
+import {  IconButton } from '@mui/material';
 import { CallEnd, MicOff, Mic, VideocamOff, Videocam } from '@mui/icons-material';
 
 const VideoConference = () => {
+    // eslint-disable-next-line
     const [peers, setPeers] = useState([]);
     const [muted, setMuted] = useState(false);
     const [cameraOff, setCameraOff] = useState(false);

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
     Container, Typography, TextField, Button, List, ListItem, ListItemText,
-    ListItemSecondaryAction, IconButton, Paper, Box
+    ListItemSecondaryAction, IconButton, Paper, Box, Alert
 } from '@mui/material';
 import { Edit as EditIcon, VideoCall as VideoCallIcon } from '@mui/icons-material';
 
@@ -15,6 +15,7 @@ const Appointments = () => {
         appointmentTime: '',
         doctorName: ''
     });
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,7 +39,6 @@ const Appointments = () => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -47,33 +47,31 @@ const Appointments = () => {
                 ...formData,
                 appointmentDate: appointmentDateTime.toISOString() // Convert to ISO string
             };
+            console.log('Formatted data:', formattedData); // Log formatted data
+
+            let response;
             if (selectedAppointment) {
-                await axios.put(`http://localhost:8080/api/appointments/${selectedAppointment.id}`, formattedData, {
+                console.log('Updating appointment with data:', formattedData);
+                response = await axios.put(`http://localhost:8080/api/appointments/${selectedAppointment.id}`, formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
                 });
             } else {
-                await axios.post('http://localhost:8080/api/appointments', formattedData, {
+                console.log('Creating new appointment with data:', formattedData);
+                response = await axios.post('http://localhost:8080/api/appointments', formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
                 });
             }
+
             fetchAppointments();
             setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '' });
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error saving appointment', error);
-            if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-                console.error('Response headers:', error.response.headers);
-            } else if (error.request) {
-                console.error('Request data:', error.request);
-            } else {
-                console.error('Error message:', error.message);
-            }
+            setError('Error saving appointment');
         }
     };
 
@@ -99,15 +97,7 @@ const Appointments = () => {
             setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '' });
         } catch (error) {
             console.error('Error deleting appointment', error);
-            if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-                console.error('Response headers:', error.response.headers);
-            } else if (error.request) {
-                console.error('Request data:', error.request);
-            } else {
-                console.error('Error message:', error.message);
-            }
+            setError('Error deleting appointment');
         }
     };
 
@@ -118,6 +108,7 @@ const Appointments = () => {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>Appointments</Typography>
+            {error && <Alert severity="error">{error}</Alert>}
             <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
                 <form onSubmit={handleSubmit}>
                     <Box sx={{ mb: 2 }}>
@@ -175,7 +166,7 @@ const Appointments = () => {
                     <ListItem key={appointment.id} component={Paper} elevation={1} sx={{ mb: 1 }}>
                         <ListItemText
                             primary={`Appointment on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${new Date(appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`}
-                            secondary={`with Dr. ${appointment.doctorName}`}
+                            secondary={`with Dr. ${appointment.doctorName} - Payment Status: ${appointment.paymentStatus || 'N/A'}`}
                         />
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(appointment)}>
