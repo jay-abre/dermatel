@@ -44,6 +44,8 @@ const Billing = () => {
             let status = response.data.data[0].attributes.status;
             if (status === 'paid') {
                 status = 'COMPLETED';
+            } else if (status === 'unpaid') {
+                status = 'PENDING';
             }
             await updatePaymentStatus(appointmentId, status);
             return status;
@@ -67,7 +69,6 @@ const Billing = () => {
             setError('Error updating payment status');
         }
     };
-
     const createPaymentLink = async (appointmentId) => {
         try {
             const paymentResponse = await axios.post('http://localhost:8080/api/payments/create-link', null, {
