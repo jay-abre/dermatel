@@ -37,7 +37,7 @@ public class AppointmentService {
         if (isDateInPast(appointment.getAppointmentDate())) {
             throw new IllegalArgumentException("Appointment date cannot be in the past.");
         }
-        if (isDateBooked(appointment.getUserId(), appointment.getAppointmentDate())) {
+        if (isDateBooked(appointment.getUserId(), appointment.getAppointmentDate(), appointment.getId())) {
             throw new IllegalArgumentException("You have already booked an appointment on this date.");
         }
         return appointmentRepository.save(appointment);
@@ -52,11 +52,14 @@ public class AppointmentService {
         return appointmentDate.before(new Date());
     }
 
-    private boolean isDateBooked(Long userId, Date appointmentDate) {
+    private boolean isDateBooked(Long userId, Date appointmentDate, Long currentAppointmentId) {
         List<Appointment> userAppointments = appointmentRepository.findByUserId(userId);
         LocalDateTime newAppointmentTime = toLocalDateTime(appointmentDate);
 
         for (Appointment existingAppointment : userAppointments) {
+            if (existingAppointment.getId().equals(currentAppointmentId)) {
+                continue; // Skip the current appointment being updated
+            }
             LocalDateTime existingAppointmentTime = toLocalDateTime(existingAppointment.getAppointmentDate());
 
             // Compare year, month, day, and hour

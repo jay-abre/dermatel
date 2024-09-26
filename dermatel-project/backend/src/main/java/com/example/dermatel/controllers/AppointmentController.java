@@ -4,12 +4,14 @@ import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.services.AppointmentService;
 import com.example.dermatel.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -17,6 +19,7 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final JwtUtil jwtUtil;
+    private static final Logger logger = Logger.getLogger(AppointmentController.class.getName());
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService, JwtUtil jwtUtil) {
@@ -31,14 +34,16 @@ public class AppointmentController {
         return appointmentService.getAppointmentsByUserId(userId);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id, HttpServletRequest request) {
+    @GetMapping("/my-appointment")
+    public ResponseEntity<Appointment> getAppointmentById(HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
-        if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
+        logger.info("Extracted User ID: " + userId);
+        Optional<Appointment> appointment = appointmentService.getAppointmentById(userId);
+        if (appointment.isPresent()) {
             return ResponseEntity.ok(appointment.get());
         } else {
+            logger.warning("No appointment found for User ID: " + userId);
             return ResponseEntity.notFound().build();
         }
     }
@@ -56,28 +61,45 @@ public class AppointmentController {
     public ResponseEntity<Appointment> updateAppointment(@PathVariable Long id, @RequestBody Appointment appointmentDetails, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
-        if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
-            Appointment updatedAppointment = appointment.get();
-            updatedAppointment.setAppointmentDate(appointmentDetails.getAppointmentDate());
-            updatedAppointment.setDoctorName(appointmentDetails.getDoctorName());
-            updatedAppointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
-            return ResponseEntity.ok(appointmentService.saveAppointment(updatedAppointment));
-        } else {
-            return ResponseEntity.notFound().build();
+        logger.info("Extracted User ID: " + userId);
+        logger.info("Appointment ID to update: " + id);
+        logger.info("Appointment Details: " + appointmentDetails);
+        try {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+            if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
+                Appointment updatedAppointment = appointment.get();
+                updatedAppointment.setAppointmentDate(appointmentDetails.getAppointmentDate());
+                updatedAppointment.setDoctorName(appointmentDetails.getDoctorName());
+                updatedAppointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
+                return ResponseEntity.ok(appointmentService.saveAppointment(updatedAppointment));
+            } else {
+                logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.severe("Error updating appointment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/my-appointment/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
-        if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
-            appointmentService.deleteAppointment(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        logger.info("Extracted User ID: " + userId);
+        logger.info("Appointment ID to delete: " + id);
+        try {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+            if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
+                appointmentService.deleteAppointment(id);
+                return ResponseEntity.noContent().build();
+            } else {
+                logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.severe("Error deleting appointment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
