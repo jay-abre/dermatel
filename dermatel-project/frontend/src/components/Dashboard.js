@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Appointments from "./Appointment";
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
     AppBar, Toolbar, Typography, IconButton,
@@ -169,7 +170,7 @@ export default function Dashboard() {
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Routes>
                                         <Route path="profile" element={<KycProfile />} />
-                                        <Route path="appointments" element={<div>Appointments Content</div>} />
+                                        <Route path="appointments" element={<Appointments />} />
                                         <Route path="videocalls" element={<div>Video Calls Content</div>} />
                                         <Route path="messaging" element={<div>Messaging Content</div>} />
                                         <Route path="ehr" element={<div>EHR Content</div>} />
