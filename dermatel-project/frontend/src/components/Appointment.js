@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
     Container, Typography, TextField, Button, List, ListItem, ListItemText,
     ListItemSecondaryAction, IconButton, Paper, Box
 } from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
+import { Edit as EditIcon, VideoCall as VideoCallIcon } from '@mui/icons-material';
 
 const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
@@ -14,6 +15,7 @@ const Appointments = () => {
         appointmentTime: '',
         doctorName: ''
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchAppointments();
@@ -108,6 +110,11 @@ const Appointments = () => {
             }
         }
     };
+
+    const handleJoinVideoCall = (appointmentId) => {
+        navigate(`/dashboard/videocalls?appointmentId=${appointmentId}`);
+    };
+
     return (
         <Container>
             <Typography variant="h4" gutterBottom>Appointments</Typography>
@@ -173,6 +180,9 @@ const Appointments = () => {
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(appointment)}>
                                 <EditIcon />
+                            </IconButton>
+                            <IconButton edge="end" aria-label="video call" onClick={() => handleJoinVideoCall(appointment.id)}>
+                                <VideoCallIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
                     </ListItem>

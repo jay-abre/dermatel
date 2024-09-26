@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Appointments from "./Appointment";
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
     AppBar, Toolbar, Typography, IconButton,
@@ -19,6 +18,8 @@ import {
     People as PeopleIcon
 } from '@mui/icons-material';
 import KycProfile from './KYCForm';
+import Appointments from './Appointment';
+import VideoConference from './VideoConference'; // Import VideoConference
 
 const theme = createTheme({
     palette: {
@@ -86,7 +87,7 @@ export default function Dashboard() {
 
     const mainTabs = [
         { text: 'Appointments', icon: <EventIcon />, path: 'appointments' },
-        { text: 'Video Calls', icon: <VideoCallIcon />, path: 'videocalls' },
+        { text: 'Video Calls', icon: <VideoCallIcon />, path: 'videocalls' }, // Add Video Calls tab
         { text: 'Messaging', icon: <MessageIcon />, path: 'messaging' },
         { text: 'EHR', icon: <DescriptionIcon />, path: 'ehr' },
         { text: 'Billing', icon: <AttachMoneyIcon />, path: 'billing' },
@@ -171,7 +172,7 @@ export default function Dashboard() {
                                     <Routes>
                                         <Route path="profile" element={<KycProfile />} />
                                         <Route path="appointments" element={<Appointments />} />
-                                        <Route path="videocalls" element={<div>Video Calls Content</div>} />
+                                        <Route path="videocalls" element={<VideoConference />} /> {/* Add VideoConference route */}
                                         <Route path="messaging" element={<div>Messaging Content</div>} />
                                         <Route path="ehr" element={<div>EHR Content</div>} />
                                         <Route path="billing" element={<div>Billing Content</div>} />
