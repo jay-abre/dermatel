@@ -28,7 +28,7 @@ import DermatologistBilling from "./DermatologistBilling";
 import Chat from "./Chat";
 import Patients from "./Patients";
 import DermatologistEHR from './DermatologistEHR';
-
+import DermatologistPatients  from "./DermatologistPatient";
 const theme = createTheme({
     palette: {
         primary: {
@@ -186,7 +186,7 @@ export default function DermatologistDashboard() {
                                         <Route path="ehr" element={<DermatologistEHR />} />
                                         <Route path="billing" element={<DermatologistBilling />} />
                                         <Route path="scan-eczema" element={<ScanEczema />} />
-                                        <Route path="patients" element={<Patients />} />
+                                        <Route path="patients" element={<DermatologistPatients />} /> {/* Add the new route */}
                                     </Routes>
                                 </Paper>
                             </Grid>
