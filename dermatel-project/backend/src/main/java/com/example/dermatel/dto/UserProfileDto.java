@@ -16,4 +16,5 @@ public class UserProfileDto {
     private String document;
     private Date createdAt;
     private Date updatedAt;
+    private String role;
 }

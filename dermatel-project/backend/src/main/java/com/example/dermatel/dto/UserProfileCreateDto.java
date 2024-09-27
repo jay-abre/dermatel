@@ -18,4 +18,5 @@ public class UserProfileCreateDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private MultipartFile document;
+    private String role;
 }

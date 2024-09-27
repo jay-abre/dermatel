@@ -98,4 +98,9 @@ public class JwtUtil {
     public Long extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("user_id", Long.class));
     }
+
+    public String extractRole(String token) {
+        List<String> roles = extractRoles(token);
+        return roles.isEmpty() ? null : roles.get(0); // Assuming the first role is the primary role
+    }
 }

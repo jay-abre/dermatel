@@ -34,6 +34,8 @@ public class UserProfile {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String document;
 
+    @Column(nullable = false)
+    private String role; // Added role field
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

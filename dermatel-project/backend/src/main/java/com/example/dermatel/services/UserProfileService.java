@@ -1,5 +1,6 @@
 package com.example.dermatel.services;
 
+import com.example.dermatel.dto.DermatologistDto;
 import com.example.dermatel.dto.UserProfileCreateDto;
 import com.example.dermatel.dto.UserProfileDto;
 import com.example.dermatel.dto.UserProfileUpdateDto;
@@ -16,7 +17,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -39,6 +43,7 @@ public class UserProfileService {
         userProfile.setFullName(createDto.getFullName());
         userProfile.setAddress(createDto.getAddress());
         userProfile.setPhoneNumber(createDto.getPhoneNumber());
+        userProfile.setRole(createDto.getRole()); // Set role
 
         LocalDate dateOfBirth = createDto.getDateOfBirth();
         if (dateOfBirth != null) {
@@ -89,10 +94,7 @@ public class UserProfileService {
             String base64Document = convertToBase64(document);
             userProfile.setDocument(base64Document);
             log.debug("Document updated and converted to Base64 for user ID: {}", userId);
-            log.info(base64Document);
         }
-
-
 
         userProfile.setUpdatedAt(new Date());
         userProfileRepository.save(userProfile);
@@ -138,10 +140,17 @@ public class UserProfileService {
         dto.setPhoneNumber(userProfile.getPhoneNumber());
         dto.setDateOfBirth(userProfile.getDateOfBirth());
         dto.setDocument(userProfile.getDocument());
+        dto.setRole(userProfile.getRole()); // Set role in DTO
         dto.setCreatedAt(userProfile.getCreatedAt());
         dto.setUpdatedAt(userProfile.getUpdatedAt());
 
         log.debug("Conversion to UserProfileDto completed for user ID: {}", userProfile.getUserId());
         return dto;
+    }
+    public List<DermatologistDto> getDermatologists() {
+        List<UserProfile> dermatologists = userProfileRepository.findByRole("ROLE_DERMATOLOGIST");
+        return dermatologists.stream()
+                .map(dermatologist -> new DermatologistDto(dermatologist.getId(), dermatologist.getFullName()))
+                .collect(Collectors.toList());
     }
 }

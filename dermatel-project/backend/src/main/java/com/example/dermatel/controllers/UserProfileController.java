@@ -49,6 +49,7 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
     @PostMapping("/create")
     public ResponseEntity<String> createProfile(
             @RequestParam("fullName") String fullName,
@@ -70,12 +71,15 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
 
+        String role = jwtUtil.extractRole(token); // Extract role from JWT
+
         UserProfileCreateDto createDto = new UserProfileCreateDto();
         createDto.setFullName(fullName);
         createDto.setAddress(address);
         createDto.setPhoneNumber(phoneNumber);
         createDto.setDateOfBirth(dateOfBirth);
         createDto.setDocument(document);
+        createDto.setRole(role); // Set role in DTO
 
         try {
             userProfileService.createProfile(userId, createDto);

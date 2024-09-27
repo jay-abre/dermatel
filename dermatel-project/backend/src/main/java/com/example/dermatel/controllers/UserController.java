@@ -1,3 +1,4 @@
+// src/main/java/com/example/dermatel/controllers/UserController.java
 package com.example.dermatel.controllers;
 
 import com.example.dermatel.constants.RoleConstants;
@@ -37,6 +38,11 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody @Valid User user) {
+        // Ensure the role is prefixed with "ROLE_"
+        if (!user.getRole().startsWith("ROLE_")) {
+            user.setRole("ROLE_" + user.getRole());
+        }
+
         if (!RoleValidator.isValidRole(user.getRole())) {
             logger.warn("Invalid role '{}' for user '{}'.", user.getRole(), user.getUsername());
             throw new InvalidRoleException("Invalid role " + user.getRole());
