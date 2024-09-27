@@ -15,7 +15,8 @@ const Appointments = () => {
         appointmentDate: '',
         appointmentTime: '',
         doctorName: '',
-        dermatologistId: ''
+        dermatologistId: '',
+        patientName: '' // Add patientName to formData
     });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -89,7 +90,7 @@ const Appointments = () => {
             }
 
             fetchAppointments();
-            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '' });
+            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '', patientName: '' });
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error saving appointment', error);
@@ -104,7 +105,8 @@ const Appointments = () => {
             appointmentDate: date,
             appointmentTime: time.substring(0, 5),
             doctorName: appointment.doctorName,
-            dermatologistId: appointment.dermatologistId
+            dermatologistId: appointment.dermatologistId,
+            patientName: appointment.patientName // Set patientName when editing
         });
     };
 
@@ -117,7 +119,7 @@ const Appointments = () => {
             });
             fetchAppointments();
             setSelectedAppointment(null);
-            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '' });
+            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '', patientName: '' });
         } catch (error) {
             console.error('Error deleting appointment', error);
             setError('Error deleting appointment');
@@ -159,6 +161,16 @@ const Appointments = () => {
                         />
                     </Box>
                     <Box sx={{ mb: 2 }}>
+                        <TextField
+                            label="Patient Name"
+                            name="patientName"
+                            value={formData.patientName}
+                            onChange={handleInputChange}
+                            fullWidth
+                            required
+                        />
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
                         <FormControl fullWidth required>
                             <InputLabel id="doctor-label">Dermatologist</InputLabel>
                             <Select
@@ -166,7 +178,6 @@ const Appointments = () => {
                                 name="dermatologistId"
                                 value={formData.dermatologistId}
                                 onChange={handleDermatologistChange}
-                                label="Dermatologist"
                             >
                                 {dermatologists.map((dermatologist) => (
                                     <MenuItem key={dermatologist.id} value={dermatologist.id}>
@@ -197,7 +208,7 @@ const Appointments = () => {
                     <ListItem key={appointment.id} component={Paper} elevation={1} sx={{ mb: 1 }}>
                         <ListItemText
                             primary={`Appointment on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${new Date(appointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`}
-                            secondary={`with Dr. ${appointment.doctorName} - Payment Status: ${appointment.paymentStatus || 'N/A'}`}
+                            secondary={`with Dr. ${appointment.doctorName} - Patient: ${appointment.patientName} - Payment Status: ${appointment.paymentStatus || 'N/A'}`}
                         />
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(appointment)}>

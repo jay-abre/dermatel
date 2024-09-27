@@ -18,16 +18,17 @@ import {
     Description as DescriptionIcon,
     AttachMoney as AttachMoneyIcon,
     Image as ImageIcon,
-    People as PeopleIcon // Import PeopleIcon
+    People as PeopleIcon
 } from '@mui/icons-material';
 import KycProfile from './KYCForm';
-import Appointments from './Appointment';
+import DermatologistAppointments from './DermatologistAppointments';
 import VideoConference from './VideoConference';
 import ScanEczema from './ScanEczema';
 import Billing from "./Billing";
 import EHR from "./EHR";
 import Chat from "./Chat";
-import Patients from "./Patients"; // Import Patients component
+import Patients from "./Patients";
+import DermatologistEHR from './DermatologistEHR';
 
 const theme = createTheme({
     palette: {
@@ -100,7 +101,7 @@ export default function DermatologistDashboard() {
         { text: 'EHR', icon: <DescriptionIcon />, path: 'ehr' },
         { text: 'Billing', icon: <AttachMoneyIcon />, path: 'billing' },
         { text: 'Scan Eczema', icon: <ImageIcon />, path: 'scan-eczema' },
-        { text: 'Patients', icon: <PeopleIcon />, path: 'patients' } // Add Patients tab
+        { text: 'Patients', icon: <PeopleIcon />, path: 'patients' }
     ];
 
     return (
@@ -180,13 +181,13 @@ export default function DermatologistDashboard() {
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Routes>
                                         <Route path="profile" element={<KycProfile />} />
-                                        <Route path="appointments" element={<Appointments />} />
+                                        <Route path="appointments" element={<DermatologistAppointments />} />
                                         <Route path="videocalls" element={<VideoConference />} />
                                         <Route path="messaging" element={<Chat />} />
-                                        <Route path="ehr" element={<EHR />} />
+                                        <Route path="ehr" element={<DermatologistEHR />} />
                                         <Route path="billing" element={<Billing />} />
                                         <Route path="scan-eczema" element={<ScanEczema />} />
-                                        <Route path="patients" element={<Patients />} /> {/* Add Patients route */}
+                                        <Route path="patients" element={<Patients />} />
                                     </Routes>
                                 </Paper>
                             </Grid>

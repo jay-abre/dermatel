@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, Button, List, ListItem, ListItemText, Alert, IconButton } from '@mui/material';
+import { Container, Typography, Button, List, ListItem, ListItemText, Alert, IconButton, TextField } from '@mui/material';
 import { Delete, Download } from '@mui/icons-material';
 
 const EHR = ({ userId }) => {
     const [medicalRecords, setMedicalRecords] = useState([]);
     const [error, setError] = useState(null);
     const [file, setFile] = useState(null);
+    const [patientName, setPatientName] = useState('');
 
     useEffect(() => {
         fetchMedicalRecords();
@@ -31,13 +32,14 @@ const EHR = ({ userId }) => {
     };
 
     const uploadMedicalRecord = async () => {
-        if (!file) {
-            setError('Please select a file to upload');
+        if (!file || !patientName) {
+            setError('Please select a file and enter the patient name');
             return;
         }
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('patientName', patientName);
 
         try {
             const response = await axios.post('http://localhost:8080/api/medical-records/upload', formData, {
@@ -48,6 +50,7 @@ const EHR = ({ userId }) => {
             });
             setMedicalRecords([...medicalRecords, response.data]);
             setFile(null);
+            setPatientName('');
         } catch (error) {
             console.error('Error uploading medical record', error);
             setError('Error uploading medical record');
@@ -92,6 +95,14 @@ const EHR = ({ userId }) => {
         <Container>
             <Typography variant="h4" gutterBottom>Electronic Health Records</Typography>
             {error && <Alert severity="error">{error}</Alert>}
+            <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Patient Name"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                sx={{ mb: 2 }}
+            />
             <input type="file" onChange={handleFileChange} />
             <Button variant="contained" color="primary" onClick={uploadMedicalRecord}>
                 Upload Medical Record
@@ -99,7 +110,7 @@ const EHR = ({ userId }) => {
             <List>
                 {medicalRecords.map((record) => (
                     <ListItem key={record.id}>
-                        <ListItemText primary={record.fileName} secondary={`Uploaded on: ${new Date(record.uploadDate).toLocaleDateString()}`} />
+                        <ListItemText primary={record.fileName} />
                         <IconButton onClick={() => downloadMedicalRecord(record.id, record.fileName)}>
                             <Download />
                         </IconButton>
