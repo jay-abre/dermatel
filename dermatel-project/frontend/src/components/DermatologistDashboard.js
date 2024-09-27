@@ -24,8 +24,7 @@ import KycProfile from './KYCForm';
 import DermatologistAppointments from './DermatologistAppointments';
 import VideoConference from './VideoConference';
 import ScanEczema from './ScanEczema';
-import Billing from "./Billing";
-import EHR from "./EHR";
+import DermatologistBilling from "./DermatologistBilling";
 import Chat from "./Chat";
 import Patients from "./Patients";
 import DermatologistEHR from './DermatologistEHR';
@@ -185,7 +184,7 @@ export default function DermatologistDashboard() {
                                         <Route path="videocalls" element={<VideoConference />} />
                                         <Route path="messaging" element={<Chat />} />
                                         <Route path="ehr" element={<DermatologistEHR />} />
-                                        <Route path="billing" element={<Billing />} />
+                                        <Route path="billing" element={<DermatologistBilling />} />
                                         <Route path="scan-eczema" element={<ScanEczema />} />
                                         <Route path="patients" element={<Patients />} />
                                     </Routes>
