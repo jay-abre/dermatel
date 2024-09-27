@@ -1,6 +1,7 @@
 // AppointmentController.java
 package com.example.dermatel.controllers;
 
+import com.example.dermatel.dto.PaymentStatusDto;
 import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.services.AppointmentService;
 import com.example.dermatel.utils.JwtUtil;
@@ -144,5 +145,12 @@ public class AppointmentController {
             logger.severe("Error updating payment status: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @GetMapping("/dermatologist/payment-status")
+    public ResponseEntity<List<PaymentStatusDto>> getPaymentStatusForDermatologist(HttpServletRequest request) {
+        String token = jwtUtil.getTokenFromRequest(request);
+        Long dermatologistId = jwtUtil.extractUserId(token);
+        List<PaymentStatusDto> paymentStatusList = appointmentService.getPaymentStatusByDermatologistId(dermatologistId);
+        return ResponseEntity.ok(paymentStatusList);
     }
 }

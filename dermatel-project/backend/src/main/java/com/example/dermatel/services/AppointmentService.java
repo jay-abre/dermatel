@@ -2,6 +2,7 @@
 package com.example.dermatel.services;
 
 import com.example.dermatel.dto.AppointmentDto;
+import com.example.dermatel.dto.PaymentStatusDto;
 import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.repositories.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,18 @@ public class AppointmentService {
                         appointment.getDermatologistId(),
                         toLocalDateTime(appointment.getAppointmentDate()),
                         appointment.getPatientName())) // Include patientName
+                .collect(Collectors.toList());
+    }
+
+
+    public List<PaymentStatusDto> getPaymentStatusByDermatologistId(Long dermatologistId) {
+        return appointmentRepository.findByDermatologistId(dermatologistId)
+                .stream()
+                .map(appointment -> new PaymentStatusDto(
+                        appointment.getPatientName(),
+                        appointment.getReferenceNumber(),
+                        appointment.getPaymentStatus()
+                ))
                 .collect(Collectors.toList());
     }
 }
