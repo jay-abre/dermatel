@@ -47,23 +47,21 @@ public class AppointmentController {
             return ResponseEntity.notFound().build();
         }
     }
-
     @PostMapping
     public Appointment createAppointment(@RequestBody Appointment appointment, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
         appointment.setUserId(userId);
         appointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
+        appointment.setDermatologistId(appointment.getDermatologistId());
         return appointmentService.saveAppointment(appointment);
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Appointment> updateAppointment(@PathVariable Long id, @RequestBody Appointment appointmentDetails, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
-        logger.info("Extracted User ID: " + userId);
-        logger.info("Appointment ID to update: " + id);
-        logger.info("Appointment Details: " + appointmentDetails);
         try {
             Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
             if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
@@ -71,14 +69,12 @@ public class AppointmentController {
                 updatedAppointment.setAppointmentDate(appointmentDetails.getAppointmentDate());
                 updatedAppointment.setDoctorName(appointmentDetails.getDoctorName());
                 updatedAppointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
-
+                updatedAppointment.setDermatologistId(appointmentDetails.getDermatologistId());
                 return ResponseEntity.ok(appointmentService.saveAppointment(updatedAppointment));
             } else {
-                logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            logger.severe("Error updating appointment: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

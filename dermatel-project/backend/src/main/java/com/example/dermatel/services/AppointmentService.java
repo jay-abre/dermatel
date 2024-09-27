@@ -1,5 +1,6 @@
 package com.example.dermatel.services;
 
+import com.example.dermatel.dto.AppointmentDto;
 import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.repositories.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
@@ -43,7 +45,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-
     public void deleteAppointment(Long id) {
         appointmentRepository.deleteById(id);
     }
@@ -69,6 +70,7 @@ public class AppointmentService {
         }
         return false;
     }
+
     private boolean isSameHour(LocalDateTime dateTime1, LocalDateTime dateTime2) {
         return dateTime1.getYear() == dateTime2.getYear() &&
                 dateTime1.getMonth() == dateTime2.getMonth() &&
@@ -86,9 +88,21 @@ public class AppointmentService {
         appointment.setPaymentLink(paymentLink);
         appointmentRepository.save(appointment);
     }
+
     public void updatePaymentStatus(Long appointmentId, Appointment.PaymentStatus paymentStatus) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new RuntimeException("Appointment not found"));
         appointment.setPaymentStatus(paymentStatus);
         appointmentRepository.save(appointment);
+    }
+
+    public List<AppointmentDto> getAppointmentsForDermatologist(Long dermatologistId) {
+        List<Appointment> appointments = appointmentRepository.findByDermatologistId(dermatologistId);
+        return appointments.stream()
+                .map(appointment -> new AppointmentDto(
+                        appointment.getId(),
+                        appointment.getUserId(),
+                        appointment.getDermatologistId(),
+                        toLocalDateTime(appointment.getAppointmentDate()))) // Removed status
+                .collect(Collectors.toList());
     }
 }
