@@ -1,3 +1,5 @@
+// src/components/DermatologistDashboard.js
+
 import React, { useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
@@ -15,7 +17,8 @@ import {
     Message as MessageIcon,
     Description as DescriptionIcon,
     AttachMoney as AttachMoneyIcon,
-    Image as ImageIcon // Import ImageIcon
+    Image as ImageIcon,
+    People as PeopleIcon // Import PeopleIcon
 } from '@mui/icons-material';
 import KycProfile from './KYCForm';
 import Appointments from './Appointment';
@@ -24,6 +27,7 @@ import ScanEczema from './ScanEczema';
 import Billing from "./Billing";
 import EHR from "./EHR";
 import Chat from "./Chat";
+import Patients from "./Patients"; // Import Patients component
 
 const theme = createTheme({
     palette: {
@@ -36,7 +40,7 @@ const theme = createTheme({
     },
 });
 
-export default function Dashboard() {
+export default function DermatologistDashboard() {
     const [value, setValue] = useState(0);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -67,7 +71,7 @@ export default function Dashboard() {
     };
 
     const handleProfile = () => {
-        navigate('/dashboard/profile');
+        navigate('/dermatologist-dashboard/profile');
     };
 
     const menuItems = [
@@ -95,7 +99,8 @@ export default function Dashboard() {
         { text: 'Messaging', icon: <MessageIcon />, path: 'messaging' },
         { text: 'EHR', icon: <DescriptionIcon />, path: 'ehr' },
         { text: 'Billing', icon: <AttachMoneyIcon />, path: 'billing' },
-        { text: 'Scan Eczema', icon: <ImageIcon />, path: 'scan-eczema' } // Add Scan Eczema tab
+        { text: 'Scan Eczema', icon: <ImageIcon />, path: 'scan-eczema' },
+        { text: 'Patients', icon: <PeopleIcon />, path: 'patients' } // Add Patients tab
     ];
 
     return (
@@ -114,10 +119,10 @@ export default function Dashboard() {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                            Telemedicine Dashboard
+                            Dermatologist Dashboard
                         </Typography>
                         <IconButton color="inherit" onClick={handleMenuOpen}>
-                            <Avatar sx={{ bgcolor: 'secondary.main' }}>JD</Avatar>
+                            <Avatar sx={{ bgcolor: 'secondary.main' }}>DR</Avatar>
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
@@ -180,7 +185,8 @@ export default function Dashboard() {
                                         <Route path="messaging" element={<Chat />} />
                                         <Route path="ehr" element={<EHR />} />
                                         <Route path="billing" element={<Billing />} />
-                                        <Route path="scan-eczema" element={<ScanEczema />} /> {/* Add ScanEczema route */}
+                                        <Route path="scan-eczema" element={<ScanEczema />} />
+                                        <Route path="patients" element={<Patients />} /> {/* Add Patients route */}
                                     </Routes>
                                 </Paper>
                             </Grid>

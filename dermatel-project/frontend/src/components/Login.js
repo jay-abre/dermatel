@@ -1,9 +1,8 @@
-// src/components/Login.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { Link, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -32,9 +31,21 @@ const Login = () => {
             });
             setSuccess('Login successful!');
             // Save the auth token
-            localStorage.setItem('authToken', response.data.token);
-            // Redirect to dashboard
-            navigate('/dashboard');
+            const token = response.data.token;
+            localStorage.setItem('authToken', token);
+
+            // Decode the token to get the user role
+            const decodedToken = jwtDecode(token);
+            const userRoles = decodedToken.roles;
+
+            // Redirect based on user role
+            if (userRoles.includes('ROLE_DERMATOLOGIST')) {
+                navigate('/dermatologist-dashboard');
+            } else if (userRoles.includes('ROLE_PATIENT')) {
+                navigate('/dashboard');
+            } else {
+                setError('Invalid user role');
+            }
         } catch (error) {
             setError('Login failed: ' + (error.response?.data || error.message));
         }

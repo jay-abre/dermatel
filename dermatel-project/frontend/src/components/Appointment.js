@@ -3,12 +3,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
     Container, Typography, TextField, Button, List, ListItem, ListItemText,
-    ListItemSecondaryAction, IconButton, Paper, Box, Alert
+    ListItemSecondaryAction, IconButton, Paper, Box, Alert, MenuItem, Select, InputLabel, FormControl
 } from '@mui/material';
 import { Edit as EditIcon, VideoCall as VideoCallIcon } from '@mui/icons-material';
 
 const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
+    const [dermatologists, setDermatologists] = useState([]);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [formData, setFormData] = useState({
         appointmentDate: '',
@@ -20,6 +21,7 @@ const Appointments = () => {
 
     useEffect(() => {
         fetchAppointments();
+        fetchDermatologists();
     }, []);
 
     const fetchAppointments = async () => {
@@ -35,10 +37,24 @@ const Appointments = () => {
         }
     };
 
+    const fetchDermatologists = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/dermatologists', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+            setDermatologists(response.data); // Directly set the response data
+        } catch (error) {
+            console.error('Error fetching dermatologists', error);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -47,19 +63,15 @@ const Appointments = () => {
                 ...formData,
                 appointmentDate: appointmentDateTime.toISOString() // Convert to ISO string
             };
-            console.log('Formatted data:', formattedData); // Log formatted data
 
-            let response;
             if (selectedAppointment) {
-                console.log('Updating appointment with data:', formattedData);
-                response = await axios.put(`http://localhost:8080/api/appointments/${selectedAppointment.id}`, formattedData, {
+                await axios.put(`http://localhost:8080/api/appointments/${selectedAppointment.id}`, formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
                 });
             } else {
-                console.log('Creating new appointment with data:', formattedData);
-                response = await axios.post('http://localhost:8080/api/appointments', formattedData, {
+                await axios.post('http://localhost:8080/api/appointments', formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
@@ -136,14 +148,22 @@ const Appointments = () => {
                         />
                     </Box>
                     <Box sx={{ mb: 2 }}>
-                        <TextField
-                            label="Doctor Name"
-                            name="doctorName"
-                            value={formData.doctorName}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
+                        <FormControl fullWidth required>
+                            <InputLabel id="doctor-label">Dermatologist</InputLabel>
+                            <Select
+                                labelId="doctor-label"
+                                name="doctorName"
+                                value={formData.doctorName}
+                                onChange={handleInputChange}
+                                label="Dermatologist"
+                            >
+                                {dermatologists.map((dermatologist) => (
+                                    <MenuItem key={dermatologist.id} value={dermatologist.name}>
+                                        {dermatologist.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Box>
                     <Button type="submit" variant="contained" color="primary" fullWidth>
                         {selectedAppointment ? 'Update' : 'Create'} Appointment
