@@ -24,6 +24,7 @@ public class MedicalRecord {
 
     private String fileType;
 
+    private String patientName;
 
     @Column(columnDefinition = "TEXT")
     private String data; // Change to String to store Base64 encoded data

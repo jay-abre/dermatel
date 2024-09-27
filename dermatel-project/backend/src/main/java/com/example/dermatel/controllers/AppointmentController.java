@@ -1,3 +1,4 @@
+// AppointmentController.java
 package com.example.dermatel.controllers;
 
 import com.example.dermatel.entities.Appointment;
@@ -47,6 +48,7 @@ public class AppointmentController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PostMapping
     public Appointment createAppointment(@RequestBody Appointment appointment, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
@@ -54,9 +56,9 @@ public class AppointmentController {
         appointment.setUserId(userId);
         appointment.setPaymentStatus(Appointment.PaymentStatus.PENDING);
         appointment.setDermatologistId(appointment.getDermatologistId());
+        appointment.setPatientName(appointment.getPatientName()); // Add patientName
         return appointmentService.saveAppointment(appointment);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Appointment> updateAppointment(@PathVariable Long id, @RequestBody Appointment appointmentDetails, HttpServletRequest request) {
@@ -101,7 +103,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/reference-number")
-    public ResponseEntity<Void> updateReferenceNumber(@PathVariable Long id, @RequestParam String referenceNumber,@RequestParam String paymentLink, HttpServletRequest request) {
+    public ResponseEntity<Void> updateReferenceNumber(@PathVariable Long id, @RequestParam String referenceNumber, @RequestParam String paymentLink, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
         logger.info("Extracted User ID: " + userId);
@@ -111,7 +113,6 @@ public class AppointmentController {
             Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
             if (appointment.isPresent() && appointment.get().getUserId().equals(userId)) {
                 appointmentService.updateReferenceNumber(id, referenceNumber, paymentLink);
-
                 return ResponseEntity.ok().build();
             } else {
                 logger.warning("No appointment found for User ID: " + userId + " and Appointment ID: " + id);
@@ -122,6 +123,7 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PutMapping("/{id}/payment-status")
     public ResponseEntity<Void> updatePaymentStatus(@PathVariable Long id, @RequestParam Appointment.PaymentStatus paymentStatus, HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
@@ -143,5 +145,4 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }

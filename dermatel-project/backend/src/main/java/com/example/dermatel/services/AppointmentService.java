@@ -1,3 +1,4 @@
+// AppointmentService.java
 package com.example.dermatel.services;
 
 import com.example.dermatel.dto.AppointmentDto;
@@ -102,7 +103,8 @@ public class AppointmentService {
                         appointment.getId(),
                         appointment.getUserId(),
                         appointment.getDermatologistId(),
-                        toLocalDateTime(appointment.getAppointmentDate()))) // Removed status
+                        toLocalDateTime(appointment.getAppointmentDate()),
+                        appointment.getPatientName())) // Include patientName
                 .collect(Collectors.toList());
     }
 }

@@ -34,6 +34,7 @@ public class Appointment {
 
     private Long dermatologistId;
 
+    private String patientName;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;

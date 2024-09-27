@@ -13,5 +13,5 @@ public class AppointmentDto {
     private Long userId;
     private Long dermatologistId;
     private LocalDateTime appointmentDate;
-
+    private String patientName;
 }

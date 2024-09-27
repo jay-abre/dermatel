@@ -1,3 +1,4 @@
+// MedicalRecordController.java
 package com.example.dermatel.controllers;
 
 import com.example.dermatel.entities.MedicalRecord;
@@ -24,10 +25,10 @@ public class MedicalRecordController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/upload")
-    public ResponseEntity<MedicalRecord> uploadMedicalRecord(@RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<MedicalRecord> uploadMedicalRecord(@RequestParam MultipartFile file, @RequestParam String patientName, HttpServletRequest request) throws IOException {
         String token = jwtUtil.getTokenFromRequest(request);
         Long userId = jwtUtil.extractUserId(token);
-        MedicalRecord medicalRecord = medicalRecordService.saveMedicalRecord(userId, file);
+        MedicalRecord medicalRecord = medicalRecordService.saveMedicalRecord(userId, patientName, file);
         return ResponseEntity.ok(medicalRecord);
     }
 
@@ -55,8 +56,16 @@ public class MedicalRecordController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MedicalRecord> updateMedicalRecord(@PathVariable Long id, @RequestParam MultipartFile file) throws IOException {
-        MedicalRecord updatedRecord = medicalRecordService.updateMedicalRecord(id, file);
+    public ResponseEntity<MedicalRecord> updateMedicalRecord(@PathVariable Long id, @RequestParam MultipartFile file, @RequestParam String patientName) throws IOException {
+        MedicalRecord updatedRecord = medicalRecordService.updateMedicalRecord(id,  file);
         return ResponseEntity.ok(updatedRecord);
+    }
+
+    @GetMapping("/dermatologists/medical-records")
+    public ResponseEntity<List<MedicalRecord>> getMedicalRecordsForDermatologist(HttpServletRequest request) {
+        String token = jwtUtil.getTokenFromRequest(request);
+        Long dermatologistId = jwtUtil.extractUserId(token);
+        List<MedicalRecord> medicalRecords = medicalRecordService.getMedicalRecordsByDermatologistId(dermatologistId);
+        return ResponseEntity.ok(medicalRecords);
     }
 }
