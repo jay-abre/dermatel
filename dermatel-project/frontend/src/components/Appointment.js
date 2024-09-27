@@ -14,7 +14,8 @@ const Appointments = () => {
     const [formData, setFormData] = useState({
         appointmentDate: '',
         appointmentTime: '',
-        doctorName: ''
+        doctorName: '',
+        dermatologistId: ''
     });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Appointments = () => {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
-            setDermatologists(response.data); // Directly set the response data
+            setDermatologists(response.data);
         } catch (error) {
             console.error('Error fetching dermatologists', error);
         }
@@ -55,13 +56,22 @@ const Appointments = () => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleDermatologistChange = (e) => {
+        const selectedDermatologist = dermatologists.find(d => d.id === e.target.value);
+        setFormData({
+            ...formData,
+            dermatologistId: selectedDermatologist.id,
+            doctorName: selectedDermatologist.name
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const appointmentDateTime = new Date(`${formData.appointmentDate}T${formData.appointmentTime}:00`);
             const formattedData = {
                 ...formData,
-                appointmentDate: appointmentDateTime.toISOString() // Convert to ISO string
+                appointmentDate: appointmentDateTime.toISOString()
             };
 
             if (selectedAppointment) {
@@ -79,7 +89,7 @@ const Appointments = () => {
             }
 
             fetchAppointments();
-            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '' });
+            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '' });
             setSelectedAppointment(null);
         } catch (error) {
             console.error('Error saving appointment', error);
@@ -92,8 +102,9 @@ const Appointments = () => {
         setSelectedAppointment(appointment);
         setFormData({
             appointmentDate: date,
-            appointmentTime: time.substring(0, 5), // Extract HH:mm
-            doctorName: appointment.doctorName
+            appointmentTime: time.substring(0, 5),
+            doctorName: appointment.doctorName,
+            dermatologistId: appointment.dermatologistId
         });
     };
 
@@ -106,7 +117,7 @@ const Appointments = () => {
             });
             fetchAppointments();
             setSelectedAppointment(null);
-            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '' });
+            setFormData({ appointmentDate: '', appointmentTime: '', doctorName: '', dermatologistId: '' });
         } catch (error) {
             console.error('Error deleting appointment', error);
             setError('Error deleting appointment');
@@ -152,13 +163,13 @@ const Appointments = () => {
                             <InputLabel id="doctor-label">Dermatologist</InputLabel>
                             <Select
                                 labelId="doctor-label"
-                                name="doctorName"
-                                value={formData.doctorName}
-                                onChange={handleInputChange}
+                                name="dermatologistId"
+                                value={formData.dermatologistId}
+                                onChange={handleDermatologistChange}
                                 label="Dermatologist"
                             >
                                 {dermatologists.map((dermatologist) => (
-                                    <MenuItem key={dermatologist.id} value={dermatologist.name}>
+                                    <MenuItem key={dermatologist.id} value={dermatologist.id}>
                                         {dermatologist.name}
                                     </MenuItem>
                                 ))}
