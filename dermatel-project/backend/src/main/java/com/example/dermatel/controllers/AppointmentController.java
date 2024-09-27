@@ -1,6 +1,7 @@
 // AppointmentController.java
 package com.example.dermatel.controllers;
 
+import com.example.dermatel.dto.PatientInfoDto;
 import com.example.dermatel.dto.PaymentStatusDto;
 import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.services.AppointmentService;
@@ -152,5 +153,12 @@ public class AppointmentController {
         Long dermatologistId = jwtUtil.extractUserId(token);
         List<PaymentStatusDto> paymentStatusList = appointmentService.getPaymentStatusByDermatologistId(dermatologistId);
         return ResponseEntity.ok(paymentStatusList);
+    }
+    @GetMapping("/dermatologist/patients")
+    public ResponseEntity<List<PatientInfoDto>> getPatientsForDermatologist(HttpServletRequest request) {
+        String token = jwtUtil.getTokenFromRequest(request);
+        Long dermatologistId = jwtUtil.extractUserId(token);
+        List<PatientInfoDto> patientInfoList = appointmentService.getPatientsByDermatologistId(dermatologistId);
+        return ResponseEntity.ok(patientInfoList);
     }
 }

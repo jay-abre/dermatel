@@ -2,9 +2,11 @@
 package com.example.dermatel.services;
 
 import com.example.dermatel.dto.AppointmentDto;
+import com.example.dermatel.dto.PatientInfoDto;
 import com.example.dermatel.dto.PaymentStatusDto;
 import com.example.dermatel.entities.Appointment;
 import com.example.dermatel.repositories.AppointmentRepository;
+import com.example.dermatel.repositories.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, UserProfileRepository userProfileRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     public List<Appointment> getAllAppointments() {
@@ -109,7 +113,6 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
-
     public List<PaymentStatusDto> getPaymentStatusByDermatologistId(Long dermatologistId) {
         return appointmentRepository.findByDermatologistId(dermatologistId)
                 .stream()
@@ -117,6 +120,24 @@ public class AppointmentService {
                         appointment.getPatientName(),
                         appointment.getReferenceNumber(),
                         appointment.getPaymentStatus()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<PatientInfoDto> getPatientsByDermatologistId(Long dermatologistId) {
+        List<Long> userIds = appointmentRepository.findByDermatologistId(dermatologistId)
+                .stream()
+                .map(appointment -> appointment.getUserId())
+                .collect(Collectors.toList());
+
+        return userProfileRepository.findByUserIdIn(userIds)
+                .stream()
+                .map(userProfile -> new PatientInfoDto(
+                        userProfile.getUserId(),
+                        userProfile.getFullName(),
+                        userProfile.getAddress(),
+                        userProfile.getPhoneNumber(),
+                        userProfile.getDateOfBirth()
                 ))
                 .collect(Collectors.toList());
     }
