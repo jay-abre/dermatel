@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
-import {  IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { CallEnd, MicOff, Mic, VideocamOff, Videocam } from '@mui/icons-material';
 
 const VideoConference = () => {
-    // eslint-disable-next-line
     const [peers, setPeers] = useState([]);
     const [muted, setMuted] = useState(false);
     const [cameraOff, setCameraOff] = useState(false);
@@ -18,13 +17,21 @@ const VideoConference = () => {
     const roomId = `telemedicine-room-${appointmentId}`;
 
     useEffect(() => {
-        socketRef.current = io.connect('http://localhost:8080');
+        socketRef.current = io('http://localhost:8081', {
+            path: '/ws/socket.io',
+            extraHeaders: {
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`
+            }
+        });
+
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
             userVideo.current.srcObject = stream;
 
-            socketRef.current.emit('join', roomId);
+            socketRef.current.emit('join', { roomId });
+            console.log(`Joined room: ${roomId}`);
 
-            socketRef.current.on('user-joined', userId => {
+            socketRef.current.on('user-joined', ({ userId }) => {
+                console.log(`User joined: ${userId}`);
                 const peer = createPeer(userId, socketRef.current.id, stream);
                 peersRef.current.push({
                     peerID: userId,
@@ -33,12 +40,18 @@ const VideoConference = () => {
                 setPeers(peers => [...peers, peer]);
             });
 
-            socketRef.current.on('signal', data => {
-                const item = peersRef.current.find(p => p.peerID === data.from);
-                item.peer.signal(data.signal);
+            socketRef.current.on('signal', ({ from, signal }) => {
+                console.log(`Signal received from: ${from}`, signal);
+                const item = peersRef.current.find(p => p.peerID === from);
+                if (item) {
+                    item.peer.signal(signal);
+                } else {
+                    console.error('Peer not found for signal:', from);
+                }
             });
 
-            socketRef.current.on('user-left', userId => {
+            socketRef.current.on('user-left', ({ userId }) => {
+                console.log(`User left: ${userId}`);
                 const peerObj = peersRef.current.find(p => p.peerID === userId);
                 if (peerObj) {
                     peerObj.peer.destroy();
@@ -47,6 +60,8 @@ const VideoConference = () => {
                 peersRef.current = peers;
                 setPeers(peers.map(p => p.peer));
             });
+        }).catch(error => {
+            console.error('Error accessing media devices.', error);
         });
 
         return () => {
@@ -64,33 +79,54 @@ const VideoConference = () => {
 
         peer.onicecandidate = (event) => {
             if (event.candidate) {
+                console.log('ICE candidate:', event.candidate);
                 socketRef.current.emit('signal', { to: userToSignal, from: callerID, signal: event.candidate });
             }
         };
 
         peer.ontrack = (event) => {
+            console.log('Track event received:', event);
             const remoteVideo = document.createElement('video');
             remoteVideo.srcObject = event.streams[0];
             remoteVideo.autoplay = true;
             remoteVideo.playsInline = true;
-            document.getElementById('remoteVideos').appendChild(remoteVideo);
+            remoteVideo.style.width = '300px'; // Adjust the width as needed
+            const remoteVideos = document.getElementById('remoteVideos');
+            if (remoteVideos) {
+                remoteVideos.appendChild(remoteVideo);
+                console.log('Remote video appended');
+            } else {
+                console.error('Remote videos container not found');
+            }
         };
 
-        stream.getTracks().forEach(track => peer.addTrack(track, stream));
+        peer.onconnectionstatechange = () => {
+            console.log('Peer connection state:', peer.connectionState);
+            if (peer.connectionState === 'failed' || peer.connectionState === 'disconnected') {
+                console.error('Peer connection failed or disconnected');
+            }
+        };
+
+        peer.oniceconnectionstatechange = () => {
+            console.log('ICE connection state:', peer.iceConnectionState);
+            if (peer.iceConnectionState === 'failed') {
+                console.error('ICE connection failed');
+            }
+        };
+
+        stream.getTracks().forEach(track => {
+            console.log('Adding track:', track);
+            peer.addTrack(track, stream);
+        });
 
         return peer;
     }
 
     const handleEndCall = () => {
-        // Close all peer connections
         peersRef.current.forEach(peerObj => peerObj.peer.destroy());
         peersRef.current = [];
         setPeers([]);
-
-        // Stop all media tracks
         userVideo.current.srcObject.getTracks().forEach(track => track.stop());
-
-        // Disconnect from the signaling server
         socketRef.current.disconnect();
     };
 
@@ -102,11 +138,7 @@ const VideoConference = () => {
 
     const handleCamera = () => {
         const videoTrack = userVideo.current.srcObject.getVideoTracks()[0];
-        if (videoTrack.enabled) {
-            videoTrack.enabled = false;
-        } else {
-            videoTrack.enabled = true;
-        }
+        videoTrack.enabled = !videoTrack.enabled;
         setCameraOff(!videoTrack.enabled);
     };
 

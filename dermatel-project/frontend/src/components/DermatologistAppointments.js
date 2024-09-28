@@ -31,7 +31,7 @@ const DermatologistAppointments = () => {
     };
 
     const handleJoinVideoCall = (appointmentId) => {
-        navigate(`/dashboard/videocalls?appointmentId=${appointmentId}`);
+        navigate(`/dermatologist-dashboard/videocalls?appointmentId=${appointmentId}`);
     };
 
     return (
