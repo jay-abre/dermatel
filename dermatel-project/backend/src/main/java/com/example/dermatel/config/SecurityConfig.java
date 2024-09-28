@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/patient/**").hasRole("PATIENT") // Patient role required
                         .requestMatchers("/api/me/profile/**").authenticated() // Ensure /me/profile is protected
                         .requestMatchers("/dashboard/**").authenticated() // Ensure /dashboard is protected
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
