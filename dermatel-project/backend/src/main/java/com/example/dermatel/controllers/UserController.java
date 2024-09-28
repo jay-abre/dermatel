@@ -6,6 +6,7 @@ import com.example.dermatel.entities.User;
 import com.example.dermatel.exceptions.InvalidRoleException;
 import com.example.dermatel.repositories.UserRepository;
 import com.example.dermatel.services.UserService;
+import com.example.dermatel.utils.JwtUtil;
 import com.example.dermatel.utils.PasswordStrengthValidator;
 import com.example.dermatel.utils.RoleValidator;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/check-username")
     public ResponseEntity<UsernameAvailability> checkUsername(@RequestBody User user) {
@@ -62,6 +67,12 @@ public class UserController {
         userRepository.save(user);
         logger.info("User '{}' registered successfully.", user.getUsername());
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    }
+
+
+    @GetMapping("/user-id")
+    public Long getUserId(@RequestHeader("Authorization") String token) {
+        return jwtUtil.extractUserId(token.substring(7)); // Remove "Bearer " prefix
     }
 
     // DTO for username availability

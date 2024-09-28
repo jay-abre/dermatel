@@ -4,37 +4,37 @@ import { db } from '../firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 import { Container, TextField, Button, List, ListItem, ListItemText, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-const Chat = () => {
+const DermatologistChat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [doctors, setDoctors] = useState([]);
-    const [selectedDoctor, setSelectedDoctor] = useState('');
-    const [patientId, setPatientId] = useState(null);
+    const [patients, setPatients] = useState([]);
+    const [selectedPatient, setSelectedPatient] = useState('');
+    const [doctorId, setDoctorId] = useState(null);
 
     useEffect(() => {
-        const fetchPatientId = async () => {
+        const fetchDoctorId = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/auth/user-id', {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
                 });
-                setPatientId(response.data);
+                setDoctorId(response.data);
             } catch (error) {
-                console.error('Error fetching patient ID:', error);
+                console.error('Error fetching doctor ID:', error);
             }
         };
 
-        fetchPatientId();
-        fetchDoctors();
+        fetchDoctorId();
+        fetchPatients();
     }, []);
 
     useEffect(() => {
-        if (selectedDoctor && patientId) {
+        if (selectedPatient && doctorId) {
             const q = query(
                 collection(db, 'messages'),
-                where('doctorId', '==', selectedDoctor),
-                where('patientId', '==', patientId),
+                where('patientId', '==', selectedPatient),
+                where('doctorId', '==', doctorId),
                 orderBy('timestamp', 'asc')
             );
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -50,28 +50,28 @@ const Chat = () => {
 
             return () => unsubscribe();
         }
-    }, [selectedDoctor, patientId]);
+    }, [selectedPatient, doctorId]);
 
-    const fetchDoctors = async () => {
+    const fetchPatients = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/dermatologists', {
+            const response = await axios.get('http://localhost:8080/api/appointments/dermatologist/patients', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
-            setDoctors(response.data);
+            setPatients(response.data);
         } catch (error) {
-            console.error('Error fetching doctors', error);
+            console.error('Error fetching patients', error);
         }
     };
 
     const handleSendMessage = async () => {
-        if (newMessage.trim() === '' || !selectedDoctor) return;
+        if (newMessage.trim() === '' || !selectedPatient) return;
 
         await addDoc(collection(db, 'messages'), {
             text: newMessage,
-            doctorId: selectedDoctor,
-            patientId: patientId,
+            patientId: selectedPatient,
+            doctorId: doctorId,
             timestamp: new Date()
         });
 
@@ -81,16 +81,16 @@ const Chat = () => {
     return (
         <Container>
             <FormControl fullWidth variant="outlined" margin="normal">
-                <InputLabel id="select-doctor-label">Select Doctor</InputLabel>
+                <InputLabel id="select-patient-label">Select Patient</InputLabel>
                 <Select
-                    labelId="select-doctor-label"
-                    value={selectedDoctor}
-                    onChange={(e) => setSelectedDoctor(e.target.value)}
-                    label="Select Doctor"
+                    labelId="select-patient-label"
+                    value={selectedPatient}
+                    onChange={(e) => setSelectedPatient(e.target.value)}
+                    label="Select Patient"
                 >
-                    {doctors.map((doctor) => (
-                        <MenuItem key={doctor.id} value={doctor.id}>
-                            {doctor.name}
+                    {patients.map((patient) => (
+                        <MenuItem key={patient.userId} value={patient.userId}>
+                            {patient.fullName}
                         </MenuItem>
                     ))}
                 </Select>
@@ -119,4 +119,4 @@ const Chat = () => {
     );
 };
 
-export default Chat;
+export default DermatologistChat;

@@ -1,5 +1,3 @@
-// src/components/DermatologistDashboard.js
-
 import React, { useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
@@ -26,9 +24,9 @@ import VideoConference from './VideoConference';
 import ScanEczema from './ScanEczema';
 import DermatologistBilling from "./DermatologistBilling";
 import Chat from "./Chat";
-import Patients from "./Patients";
 import DermatologistEHR from './DermatologistEHR';
 import DermatologistPatients  from "./DermatologistPatient";
+import DermatologistChat from "./DermatologistChat";
 const theme = createTheme({
     palette: {
         primary: {
@@ -182,7 +180,7 @@ export default function DermatologistDashboard() {
                                         <Route path="profile" element={<KycProfile />} />
                                         <Route path="appointments" element={<DermatologistAppointments />} />
                                         <Route path="videocalls" element={<VideoConference />} />
-                                        <Route path="messaging" element={<Chat />} />
+                                        <Route path="messaging" element={<DermatologistChat />} />
                                         <Route path="ehr" element={<DermatologistEHR />} />
                                         <Route path="billing" element={<DermatologistBilling />} />
                                         <Route path="scan-eczema" element={<ScanEczema />} />
