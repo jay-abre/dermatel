@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Hospital, LogIn, Key, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -13,7 +13,6 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setError('');
         setSuccess('');
 
@@ -49,17 +48,17 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
             {/* Header */}
-            <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-white">
+            <header className="px-4 lg:px-6 h-20 flex items-center border-b bg-white shadow-md">
                 <Link to="/" className="flex items-center space-x-2">
-                    <Hospital className="h-6 w-6 text-blue-600" />
-                    <span className="text-xl font-bold text-gray-900">DERMATEL</span>
+                    <Hospital className="h-8 w-8 text-blue-600" />
+                    <span className="text-2xl font-bold text-blue-800">DERMATEL</span>
                 </Link>
                 <nav className="ml-auto flex items-center gap-4 sm:gap-6">
                     <Link
                         to="/register"
-                        className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                        className="text-sm font-medium bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 transition-colors shadow-md"
                     >
                         Register
                     </Link>
@@ -69,9 +68,9 @@ const Login = () => {
             {/* Main Content */}
             <main className="flex-grow flex justify-center items-center p-6">
                 <div className="w-full max-w-md">
-                    <div className="bg-white shadow-xl rounded-lg overflow-hidden">
-                        <div className="p-6 sm:p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Login to Your Account</h2>
+                    <div className="bg-white shadow-2xl rounded-3xl overflow-hidden">
+                        <div className="p-8 sm:p-10">
+                            <h2 className="text-3xl font-bold text-blue-900 text-center mb-6">Login to Your Account</h2>
                             {error && (
                                 <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md flex items-center">
                                     <AlertCircle className="h-5 w-5 mr-2" />
@@ -86,7 +85,7 @@ const Login = () => {
                             )}
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label htmlFor="username" className="block text-sm font-medium text-blue-800 mb-1">
                                         Username
                                     </label>
                                     <div className="relative">
@@ -95,14 +94,14 @@ const Login = () => {
                                             id="username"
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full pl-10 pr-4 py-2 border border-blue-300 rounded-full shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                             placeholder="Enter your username"
                                         />
-                                        <LogIn className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                                        <LogIn className="h-5 w-5 text-blue-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                                     </div>
                                 </div>
                                 <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label htmlFor="password" className="block text-sm font-medium text-blue-800 mb-1">
                                         Password
                                     </label>
                                     <div className="relative">
@@ -111,37 +110,35 @@ const Login = () => {
                                             id="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full pl-10 pr-4 py-2 border border-blue-300 rounded-full shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                             placeholder="Enter your password"
                                         />
-                                        <Key className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                                        <Key className="h-5 w-5 text-blue-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                                     </div>
                                 </div>
                                 <div>
                                     <button
                                         type="submit"
-                                        className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                                        className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
                                     >
                                         Login
                                     </button>
                                 </div>
                             </form>
-                            <div className="mt-6 text-center">
-                                <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
-                                    Forgot your password?
-                                </Link>
-                            </div>
                         </div>
                     </div>
                 </div>
             </main>
 
             {/* Footer */}
-            <footer className="py-6 border-t bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <p className="text-center text-sm text-gray-500">
-                        &copy; 2024 DERMATEL. All rights reserved.
-                    </p>
+            <footer className="border-t py-8 px-4 bg-white">
+                <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center">
+                    <p className="text-blue-600 mb-4 md:mb-0">&copy; 2024 DERMATEL. All rights reserved.</p>
+                    <div className="flex gap-6">
+                        <Link to="/privacy" className="text-blue-600 hover:text-blue-800 transition-colors">Privacy Policy</Link>
+                        <Link to="/terms" className="text-blue-600 hover:text-blue-800 transition-colors">Terms of Service</Link>
+                        <Link to="/contact" className="text-blue-600 hover:text-blue-800 transition-colors">Contact Us</Link>
+                    </div>
                 </div>
             </footer>
         </div>

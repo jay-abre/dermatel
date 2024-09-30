@@ -92,7 +92,7 @@ export default function KycProfile() {
             console.log('Form submitted successfully:', response.data);
         } catch (error) {
             console.error('Error submitting form:', error);
-            setError('Failed to submit KYC information. Please try again.');
+            setError('Failed to submit user information. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -108,7 +108,7 @@ export default function KycProfile() {
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-md">
-            <h2 className="text-3xl font-bold mb-6 text-center">KYC User Profile</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center">User Profile</h2>
             {error && <div className="text-red-500 text-center mb-4">{error}</div>}
             {success && <div className="text-green-500 text-center mb-4">KYC information submitted successfully!</div>}
             <form onSubmit={handleSubmit} className="space-y-6">
