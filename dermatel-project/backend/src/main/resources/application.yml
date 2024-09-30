@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dermatel_db
-    username: dermatel
-    password: password
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,10 +19,10 @@ file:
     dir: ./uploads
 
 jwt:
-  secret: d205b4b69c2ebd1950634feeb32eef9a7ee8beea3eac705bad19a3236c5c4c28
+  secret: ${JWT_SECRET}
   expiration-ms: 3600000
 
 paymongo:
   api:
     url: https://api.paymongo.com
-    key: sk_test_vbEqKGULGtW98rL3VyPdbMHh
+    key: ${PAYMONGO_API_KEY}
