@@ -6,6 +6,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@heroicons/react": "^1.0.6",
+    "@jitsi/react-sdk": "^1.4.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
     "@react-pdf-viewer/core": "^3.12.0",
