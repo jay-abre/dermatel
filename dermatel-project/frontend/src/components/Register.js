@@ -25,7 +25,7 @@ const RegisterPage = () => {
         }
 
         try {
-            await axios.post('http://localhost:8080/api/auth/register', {
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/register`, {
                 username,
                 password,
                 role
