@@ -15,7 +15,7 @@ const EHR = ({ userId }) => {
 
     const fetchMedicalRecords = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/medical-records/user', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/medical-records/user`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
@@ -42,7 +42,7 @@ const EHR = ({ userId }) => {
         formData.append('patientName', patientName);
 
         try {
-            const response = await axios.post('http://localhost:8080/api/medical-records/upload', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/medical-records/upload`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`,
                     'Content-Type': 'multipart/form-data'
@@ -59,7 +59,7 @@ const EHR = ({ userId }) => {
 
     const downloadMedicalRecord = async (id, fileName) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/medical-records/download/${id}`, {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/medical-records/download/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`,
                 },
@@ -79,7 +79,7 @@ const EHR = ({ userId }) => {
 
     const deleteMedicalRecord = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/api/medical-records/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/medical-records/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }

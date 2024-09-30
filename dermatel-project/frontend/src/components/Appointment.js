@@ -28,7 +28,7 @@ const Appointments = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/appointments', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/appointments`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
@@ -41,7 +41,7 @@ const Appointments = () => {
 
     const fetchDermatologists = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/dermatologists', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dermatologists`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
@@ -76,13 +76,13 @@ const Appointments = () => {
             };
 
             if (selectedAppointment) {
-                await axios.put(`http://localhost:8080/api/appointments/${selectedAppointment.id}`, formattedData, {
+                await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/${selectedAppointment.id}`, formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
                 });
             } else {
-                await axios.post('http://localhost:8080/api/appointments', formattedData, {
+                await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/appointments`, formattedData, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
@@ -112,7 +112,7 @@ const Appointments = () => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`http://localhost:8080/api/appointments/my-appointment/${selectedAppointment.id}`, {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/my-appointment/${selectedAppointment.id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }

@@ -15,7 +15,7 @@ const Billing = () => {
 
     const fetchAppointments = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/appointments', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/appointments`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
@@ -35,7 +35,7 @@ const Billing = () => {
 
     const checkPaymentStatus = async (referenceNumber, appointmentId) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/payments/retrieve-link', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/payments/retrieve-link`, {
                 params: { referenceNumber },
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
@@ -58,7 +58,7 @@ const Billing = () => {
 
     const updatePaymentStatus = async (appointmentId, status) => {
         try {
-            await axios.put(`http://localhost:8080/api/appointments/${appointmentId}/payment-status`, null, {
+            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/${appointmentId}/payment-status`, null, {
                 params: { paymentStatus: status },
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
@@ -69,9 +69,10 @@ const Billing = () => {
             setError('Error updating payment status');
         }
     };
+
     const createPaymentLink = async (appointmentId) => {
         try {
-            const paymentResponse = await axios.post('http://localhost:8080/api/payments/create-link', null, {
+            const paymentResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/payments/create-link`, null, {
                 params: {
                     amount: 50000, // Example amount
                     description: `Payment for appointment ${appointmentId}`
@@ -89,7 +90,7 @@ const Billing = () => {
                 throw new Error('Reference number is missing in the payment data');
             }
 
-            await axios.put(`http://localhost:8080/api/appointments/${appointmentId}/reference-number`, null, {
+            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/${appointmentId}/reference-number`, null, {
                 params: {
                     referenceNumber: referenceNumber,
                     paymentLink: paymentLink

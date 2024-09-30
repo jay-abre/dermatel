@@ -14,7 +14,7 @@ const DermatologistChat = () => {
     useEffect(() => {
         const fetchDoctorId = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/auth/user-id', {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user-id`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
@@ -54,14 +54,14 @@ const DermatologistChat = () => {
 
     const fetchPatients = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/appointments/dermatologist/patients', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/dermatologist/patients`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
             setPatients(response.data);
         } catch (error) {
-            console.error('Error fetching patients', error);
+            console.error('Error fetching patients:', error);
         }
     };
 

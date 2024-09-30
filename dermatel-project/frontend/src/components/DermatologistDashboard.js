@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
     AppBar, Toolbar, Typography, IconButton,
@@ -24,8 +25,9 @@ import VideoConference from './VideoConference';
 import ScanEczema from './ScanEczema';
 import DermatologistBilling from "./DermatologistBilling";
 import DermatologistEHR from './DermatologistEHR';
-import DermatologistPatients  from "./DermatologistPatient";
+import DermatologistPatients from "./DermatologistPatient";
 import DermatologistChat from "./DermatologistChat";
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -183,7 +185,7 @@ export default function DermatologistDashboard() {
                                         <Route path="ehr" element={<DermatologistEHR />} />
                                         <Route path="billing" element={<DermatologistBilling />} />
                                         <Route path="scan-eczema" element={<ScanEczema />} />
-                                        <Route path="patients" element={<DermatologistPatients />} /> {/* Add the new route */}
+                                        <Route path="patients" element={<DermatologistPatients />} />
                                     </Routes>
                                 </Paper>
                             </Grid>

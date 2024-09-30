@@ -12,7 +12,7 @@ const DermatologistBilling = () => {
 
     const fetchBillingInfo = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/appointments/dermatologist/payment-status', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/appointments/dermatologist/payment-status`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }

@@ -25,7 +25,7 @@ export default function KycProfile() {
             }
 
             try {
-                const response = await axios.get('http://localhost:8080/api/me/profile', {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/me/profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.data) {
@@ -80,7 +80,7 @@ export default function KycProfile() {
             formDataToSend.append('document', formData.document);
         }
 
-        const url = isProfileExists ? 'http://localhost:8080/api/me/profile/update' : 'http://localhost:8080/api/me/profile/create';
+        const url = isProfileExists ? `${process.env.REACT_APP_BACKEND_URL}/api/me/profile/update` : `${process.env.REACT_APP_BACKEND_URL}/api/me/profile/create`;
 
         try {
             const response = await axios.post(url, formDataToSend, {

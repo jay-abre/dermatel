@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/super-admin/users', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/super-admin/users`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
             });
             setUsers(response.data);
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
 
     const handleCreateUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/super-admin/users', newUser, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/super-admin/users`, newUser, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
             });
             setUsers([...users, response.data]);
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
 
     const handleUpdateUser = async (id) => {
         try {
-            const response = await axios.put(`http://localhost:8080/api/super-admin/users/${id}`, editUser, {
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/super-admin/users/${id}`, editUser, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
             });
             setUsers(users.map(user => (user.id === id ? response.data : user)));
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
 
     const handleDeleteUser = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/api/super-admin/users/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/super-admin/users/${id}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
             });
             setUsers(users.filter(user => user.id !== id));
@@ -102,7 +102,6 @@ const AdminDashboard = () => {
         localStorage.removeItem('authToken');
         navigate('/login');
     };
-
 
     const handleEditUser = (user) => {
         setEditUser(user);
@@ -158,7 +157,6 @@ const AdminDashboard = () => {
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}
                         >
-
                             <MenuItem onClick={handleLogout}>
                                 <LogoutIcon sx={{ mr: 1 }} /> Logout
                             </MenuItem>

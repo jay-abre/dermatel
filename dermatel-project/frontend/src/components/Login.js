@@ -22,7 +22,7 @@ const Login = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
                 username,
                 password
             });

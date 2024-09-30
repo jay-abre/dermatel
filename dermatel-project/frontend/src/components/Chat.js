@@ -14,7 +14,7 @@ const Chat = () => {
     useEffect(() => {
         const fetchPatientId = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/auth/user-id', {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user-id`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
                     }
@@ -54,7 +54,7 @@ const Chat = () => {
 
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/dermatologists', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dermatologists`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
