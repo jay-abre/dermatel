@@ -114,7 +114,7 @@ export default function Dashboard() {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                            Telemedicine Dashboard
+                            DERMATEL
                         </Typography>
                         <IconButton color="inherit" onClick={handleMenuOpen}>
                             <Avatar sx={{ bgcolor: 'secondary.main' }}>JD</Avatar>
