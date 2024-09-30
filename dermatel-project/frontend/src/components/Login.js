@@ -43,7 +43,8 @@ const Login = () => {
                 setError('Invalid user role');
             }
         } catch (error) {
-            setError('Login failed: ' + (error.response?.data || error.message));
+            const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+            setError(`Login failed: ${errorMessage}`);
         }
     };
 
