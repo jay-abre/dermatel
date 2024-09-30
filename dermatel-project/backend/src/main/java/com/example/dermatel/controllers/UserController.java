@@ -40,9 +40,14 @@ public class UserController {
         logger.info("Username '{}' availability checked: {}", user.getUsername(), isAvailable);
         return ResponseEntity.ok().body(new UsernameAvailability(isAvailable));
     }
-
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody @Valid User user) {
+        // Check if the username is already taken
+        if (userRepository.existsByUsername(user.getUsername())) {
+            logger.warn("Registration attempt with already taken username '{}'.", user.getUsername());
+            return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
+        }
+
         // Ensure the role is prefixed with "ROLE_"
         if (!user.getRole().startsWith("ROLE_")) {
             user.setRole("ROLE_" + user.getRole());
