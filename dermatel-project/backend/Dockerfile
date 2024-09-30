@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy the current directory contents into the container
 COPY . .
 
+# Grant execute permission to mvnw
+RUN chmod +x ./mvnw
+
 # Build the application
 RUN ./mvnw clean install
 
 # Run the application
-CMD ["java", "-jar", "target/dermatel-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/your-app.jar"]
