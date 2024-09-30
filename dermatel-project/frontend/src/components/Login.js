@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
-import { Link, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {Link, useNavigate} from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -43,6 +43,8 @@ const Login = () => {
                 navigate('/dermatologist-dashboard');
             } else if (userRoles.includes('ROLE_PATIENT')) {
                 navigate('/dashboard');
+            } else if (userRoles.includes('ROLE_ADMIN')) {
+                navigate('/admin-dashboard');
             } else {
                 setError('Invalid user role');
             }
@@ -53,15 +55,18 @@ const Login = () => {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            <Navbar /> {/* Include the Navbar component */}
+            <Navbar/> {/* Include the Navbar component */}
             <div className="flex-grow flex justify-center items-center p-6">
                 <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg border border-gray-200">
                     <h2 className="text-3xl font-extrabold text-gray-900 mb-6 text-center">Login to Your Account</h2>
-                    {error && <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md">{error}</div>}
-                    {success && <div className="mb-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-md">{success}</div>}
+                    {error && <div
+                        className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md">{error}</div>}
+                    {success && <div
+                        className="mb-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-md">{success}</div>}
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label htmlFor="username" className="block text-gray-700 text-sm font-medium mb-2">Username</label>
+                            <label htmlFor="username"
+                                   className="block text-gray-700 text-sm font-medium mb-2">Username</label>
                             <input
                                 type="text"
                                 id="username"
@@ -72,7 +77,8 @@ const Login = () => {
                             />
                         </div>
                         <div className="mb-5">
-                            <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                            <label htmlFor="password"
+                                   className="block text-gray-700 text-sm font-medium mb-2">Password</label>
                             <input
                                 type="password"
                                 id="password"
@@ -92,7 +98,8 @@ const Login = () => {
                 </div>
             </div>
             {/* Footer */}
-            <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full items-center px-4 md:px-6 border-t border-border bg-primary text-primary-foreground animate-fade-in">
+            <footer
+                className="flex flex-col gap-2 sm:flex-row py-6 w-full items-center px-4 md:px-6 border-t border-border bg-primary text-primary-foreground animate-fade-in">
                 <p className="text-xs">&copy; 2024 Telemedicine App. All rights reserved.</p>
                 <nav className="sm:ml-auto flex gap-4 sm:gap-6">
                     <Link to="/terms" className="text-xs hover:underline underline-offset-4 animate-hover">

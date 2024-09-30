@@ -6,6 +6,7 @@ import RegisterPage from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import DermatologistDashboard from "./components/DermatologistDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                 <Route path="/dermatologist-dashboard/*" element={<PrivateRoute><DermatologistDashboard /></PrivateRoute>} />
+                <Route path="/admin-dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
             </Routes>
         </Router>
     );

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { JitsiMeeting } from '@jitsi/react-sdk';
 
 const VideoConference = () => {
     const location = useLocation();

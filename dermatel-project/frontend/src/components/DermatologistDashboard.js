@@ -23,7 +23,6 @@ import DermatologistAppointments from './DermatologistAppointments';
 import VideoConference from './VideoConference';
 import ScanEczema from './ScanEczema';
 import DermatologistBilling from "./DermatologistBilling";
-import Chat from "./Chat";
 import DermatologistEHR from './DermatologistEHR';
 import DermatologistPatients  from "./DermatologistPatient";
 import DermatologistChat from "./DermatologistChat";
